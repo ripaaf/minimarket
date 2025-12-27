@@ -1,47 +1,97 @@
-Minimarket Laravel Skeleton
+# Minimarket Laravel App
 
-This folder contains a scaffolded Laravel application structure (models, migrations, API controllers, and seeders) inferred from the provided SQL dump `minimarketmakmurjayadb.sql`.
+Panduan singkat untuk menjalankan proyek Laravel ini secara lokal.
 
-Important: This scaffold does NOT include the Laravel framework or vendor files. Follow the instructions below to create a runnable Laravel app locally.
+## Prasyarat
+- PHP 8.1+ dengan ekstensi umum Laravel (openssl, pdo, mbstring, tokenizer, xml, ctype, json, gd jika perlu gambar)
+- Composer
+- Node.js + npm (untuk asset build dengan Vite)
+- MySQL/MariaDB (atau DB lain yang dikonfigurasi di `config/database.php`)
 
-Quick setup (PowerShell):
-
-```powershell
-# 1. Create a new Laravel project named "minimarket"
-composer create-project laravel/laravel minimarket
-
-# 2. Copy the files from this folder into the Laravel project root (merge the directories)
-
-# 3. Configure .env DB settings (DB_DATABASE, DB_USERNAME, DB_PASSWORD)
-
-# 4. Install dependencies and generate app key
+## Langkah Setup
+1) **Masuk folder proyek**
+```bash
 cd minimarket
-composer install
-php artisan key:generate
-
-# Optional: install Breeze for basic auth & UI
-composer require laravel/breeze --dev
-php artisan breeze:install
-npm install
-npm run dev
-
-# 5. Run migrations and seeders
-php artisan migrate --seed
-
-# 6. Start the dev server
-php artisan serve
-
-# API endpoints (example)
-# GET /api/barang
-# POST /api/barang
-# GET /api/penjualan
 ```
 
-Files included here:
-- `app/Models/*` - Eloquent models with relationships
-- `database/migrations/*` - migrations for all tables
-- `database/seeders/*` - seeders with initial data from SQL dump
-- `app/Http/Controllers/Api/*` - API controllers with CRUD (JSON)
-- `routes/api.php` - API resource routes
+2) **Salin env**
+```bash
+cp .env.example .env
+```
 
-If you want Blade CRUD views instead of API JSON endpoints, tell me and I will add simple Blade templates and web routes.
+3) **Set kunci aplikasi**
+```bash
+php artisan key:generate
+```
+
+4) **Konfigurasi database**
+Edit `.env` untuk `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` sesuai koneksi lokal Anda.
+
+5) **Install dependencies**
+```bash
+composer install
+npm install
+```
+
+6) **Jalankan migrasi & seed** (mengisi data dasar, tanpa order bawaan)
+```bash
+php artisan migrate --seed
+```
+Jika ingin reset total:
+```bash
+php artisan migrate:fresh --seed
+```
+
+7) **Build asset frontend**
+- Sekali jalan (dev build):
+```bash
+npm run dev
+```
+- Mode watch saat pengembangan:
+```bash
+npm run dev -- --watch
+```
+- Untuk produksi:
+```bash
+npm run build
+```
+
+8) **Jalankan server lokal**
+```bash
+php artisan serve
+```
+Aplikasi aktif di http://127.0.0.1:8000 (atau port yang tertera).
+
+## Ringkas Perintah Utama
+```bash
+# migrasi
+php artisan migrate
+
+# seed data contoh
+php artisan db:seed
+
+# buat symlink storage publik
+php artisan storage:link
+
+# jalankan server lokal
+php artisan serve
+```
+
+## Akun & Data Awal
+- Seeder membuat user dasar (lihat `database/seeders/UserSeeder.php`).
+- Produk contoh beserta URL gambar ada di `database/seeders/BarangSeeder.php`.
+- Seeder **tidak** membuat order bawaan (penjualan/detail_penjualan tidak dipanggil di DatabaseSeeder).
+
+## Testing
+```bash
+php artisan test
+```
+
+## Tip Pengembangan
+- Jika mengubah env/konfigurasi cache, jalankan: `php artisan config:clear` dan `php artisan cache:clear`.
+- Jika storage symlink dibutuhkan untuk file upload: `php artisan storage:link`.
+- Untuk cek log: `storage/logs/laravel.log`.
+
+## Masalah Umum
+- Aset tidak muncul: pastikan `npm run dev`/`build` sudah jalan dan URL Vite sesuai di `.env` (`VITE_APP_URL`).
+- Error DB: cek kredensial `.env` dan pastikan DB sudah dibuat.
