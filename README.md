@@ -5,8 +5,8 @@ Panduan singkat untuk menjalankan proyek Laravel ini secara lokal.
 ## Prasyarat
 - PHP 8.1+ dengan ekstensi umum Laravel (openssl, pdo, mbstring, tokenizer, xml, ctype, json, gd jika perlu gambar)
 - Composer
-- Node.js + npm (untuk asset build dengan Vite)
 - MySQL/MariaDB (atau DB lain yang dikonfigurasi di `config/database.php`)
+- **Opsional (jika ingin build aset dengan Vite)**: Node.js + npm
 
 ## Langkah Setup
 1) **Masuk folder proyek**
@@ -30,6 +30,9 @@ Edit `.env` untuk `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` sesuai koneksi lok
 5) **Install dependencies**
 ```bash
 composer install
+```
+Jika ingin build aset dengan Vite, jalankan juga:
+```bash
 npm install
 ```
 
@@ -42,8 +45,8 @@ Jika ingin reset total:
 php artisan migrate:fresh --seed
 ```
 
-7) **Build asset frontend**
-- Sekali jalan (dev build):
+7) **Build asset frontend (opsional, jika butuh)**
+- Dev build sekali jalan:
 ```bash
 npm run dev
 ```
@@ -51,7 +54,7 @@ npm run dev
 ```bash
 npm run dev -- --watch
 ```
-- Untuk produksi:
+- Build produksi:
 ```bash
 npm run build
 ```
