@@ -9,6 +9,11 @@ class ShopController extends Controller
 {
     public function index(Request $request)
     {
+        // block access if customer is not authenticated
+        if (!$request->session()->get('user_id')) {
+            return redirect()->route('login')->with('error', 'Silakan login untuk mengakses shop.');
+        }
+
         $query = $request->input('q');
         $barangs = Barang::query();
         if ($query) {

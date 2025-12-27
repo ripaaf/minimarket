@@ -22,6 +22,7 @@ Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remov
 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/success/{id}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 // Profile
 Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
@@ -43,6 +44,13 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 Route::middleware(['web'])->group(function(){
 	Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 	Route::post('/admin/order/{id}/process', [AdminController::class, 'process'])->name('admin.order.process');
+	Route::get('/admin/products/create', [AdminController::class, 'createProduct'])->name('admin.products.create');
+	Route::post('/admin/products', [AdminController::class, 'storeProduct'])->name('admin.products.store');
+	Route::get('/admin/products', [AdminController::class, 'listProducts'])->name('admin.products.index');
+	Route::get('/admin/products/{id}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
+	Route::put('/admin/products/{id}', [AdminController::class, 'updateProduct'])->name('admin.products.update');
+	Route::delete('/admin/products/{id}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
+	Route::get('/admin/orders/items', [AdminController::class, 'ordersWithItems'])->name('admin.orders.items');
 });
 
 

@@ -9,12 +9,16 @@ use App\Models\DetailPenjualan;
 use App\Models\Barang;
 use App\Models\Pelanggan;
 use App\Models\Pegawai;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CheckoutController extends Controller
 {
     public function index(Request $request)
     {
         $userId = $request->session()->get('user_id');
+        if (!$userId) {
+            return redirect()->route('login')->with('error', 'Silakan login sebelum melakukan checkout.');
+        }
         $cart = [];
         $total = 0;
         if ($userId) {
@@ -38,10 +42,14 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
+        if (!$request->session()->get('user_id')) {
+            return redirect()->route('login')->with('error', 'Silakan login sebelum melakukan checkout.');
+        }
+
         $data = $request->validate([
             'customer_name' => 'nullable|string|max:255',
-            'customer_address' => 'nullable|string|max:255',
-            'customer_phone' => 'nullable|string|max:20',
+            'customer_address' => 'nullable|string|max:100',
+            'customer_phone' => ['nullable','string','max:20','regex:/^[0-9]+$/'],
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
         ]);
@@ -131,10 +139,22 @@ class CheckoutController extends Controller
             } else {
                 $request->session()->forget('cart');
             }
-            return redirect()->route('home')->with('success', 'Checkout successful');
+            return redirect()->route('checkout.success', ['id' => $penjualan->id_penjualan]);
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('cart.index')->with('error', 'Checkout failed: ' . $e->getMessage());
         }
+    }
+
+    public function success($id)
+    {
+        try {
+            $order = Penjualan::with(['detailPenjualan.barang', 'pegawai', 'pelanggan'])->findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('home')->with('error', 'Order not found');
+        }
+
+        $total = $order->detailPenjualan->sum('subtotal');
+        return view('checkout.success', compact('order', 'total'));
     }
 }

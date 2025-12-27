@@ -30,7 +30,10 @@ class ProfileController extends Controller
         }
         $orders = [];
         if ($pelanggan) {
-            $orders = Penjualan::where('id_pelanggan', $pelanggan->id_pelanggan)->orderBy('tanggal', 'desc')->get();
+            $orders = Penjualan::with(['detailPenjualan.barang', 'pegawai'])
+                ->where('id_pelanggan', $pelanggan->id_pelanggan)
+                ->orderBy('tanggal', 'desc')
+                ->get();
         }
 
         return view('profile.show', compact('user','likes','orders'));
@@ -57,7 +60,10 @@ class ProfileController extends Controller
         $user = User::find($userId);
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('profiles', 'public');
-            $user->image_url = '/storage/' . $path;
+            if (!$path) {
+                return back()->with('error', 'Upload foto gagal, coba lagi.');
+            }
+            $user->image_url = Storage::url($path);
         }
         $user->name = $data['name'];
         $user->phone = $data['phone'] ?? $user->phone;
