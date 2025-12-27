@@ -40,7 +40,12 @@ Jika ingin reset total:
 php artisan migrate:fresh --seed
 ```
 
-7) **Jalankan server lokal**
+7) **Buat symlink storage publik**
+```bash
+php artisan storage:link
+```
+
+8) **Jalankan server lokal**
 ```bash
 php artisan serve
 ```
